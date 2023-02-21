@@ -7,23 +7,23 @@ pipeline {
         stage('Build Maven'){
             steps{
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/cndiaye-dev/atos-devops-automation-demo']]])
-                bat 'mvn clean install'
+                sh 'mvn clean install'
             }
         }
         stage('Build docker image'){
             steps{
                 script{
-                    bat 'docker build -t cheikhn414/atos-devops-automation-demo .'
+                    sh 'docker build -t cheikhn414/atos-devops-automation-demo .'
                 }
             }
         }
         stage('Push image to Hub'){
             steps{
                 script{
-                    bat 'docker login -u cheikhn414 -p LINdepoule88'
+                    sh 'docker login -u cheikhn414 -p LINdepoule88'
                 }
                 script{
-                    bat 'docker push cheikhn414/atos-devops-automation-demo'
+                    sh 'docker push cheikhn414/atos-devops-automation-demo'
                 }
             }
         }
