@@ -13,13 +13,13 @@ pipeline {
         stage('Build docker image'){
             steps{
                 script{
-                    bat 'docker build -t devopsprojet/devOpsProjetCv .'
+                    bat 'docker build -t devopsprojet/devopsprojetcv .'
                 }
             }
         }
          stage('Run Docker Container') {
             steps {
-                bat 'docker run -d -p 8090:8080 --name test-container devopsprojet/devOpsProjetCv:latest'
+                bat 'docker run -d -p 8090:8080 --name test-container devopsprojet/devopsprojetcv:latest'
                 bat 'sleep 15s'
             }
         }
@@ -40,7 +40,7 @@ pipeline {
                     bat 'docker login -u devopsprojet -p Atos@2023'
                 }
                 script{
-                    bat 'docker push devopsprojet/devOpsProjetCv'
+                    bat 'docker push devopsprojet/devopsprojetcv'
                 }
             }
         }
@@ -54,7 +54,7 @@ pipeline {
     }
     post {
         success {
-            slackSend message:"A new version of devopsprojet/devOpsProjetCv is succesful build - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+            slackSend message:"A new version of devopsprojet/devopsprojetcv is succesful build - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
         }
     }
 }
