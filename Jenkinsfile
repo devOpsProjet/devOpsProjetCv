@@ -6,24 +6,41 @@ pipeline {
     stages{
         stage('Build Maven'){
             steps{
-                checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/cndiaye-dev/atos-devops-automation-demo']]])
-                sh 'mvn clean install'
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/devOpsProjet/devOpsProjetCv']]])
+                bat 'mvn clean install'
             }
         }
         stage('Build docker image'){
             steps{
                 script{
-                    sh 'docker build -t cheikhn414/atos-devops-automation-demo .'
+                    bat 'docker build -t devopsprojet/devOpsProjetCv .'
                 }
+            }
+        }
+         stage('Run Docker Container') {
+            steps {
+                bat 'docker run -d -p 8090:8080 --name test-container devopsprojet/devOpsProjetCv:latest'
+                bat 'sleep 15s'
+            }
+        }
+        stage('Test Docker Container') {
+            steps {
+               bat 'curl http://localhost:8090'
+            }
+        }
+        stage('Clean Environment') {
+            steps {
+                bat 'docker stop test-container'
+                bat 'docker rm test-container'
             }
         }
         stage('Push image to Hub'){
             steps{
                 script{
-                    sh 'docker login -u cheikhn414 -p LINdepoule88'
+                    bat 'docker login -u devopsprojet -p Atos@2023'
                 }
                 script{
-                    sh 'docker push cheikhn414/atos-devops-automation-demo'
+                    bat 'docker push devopsprojet/devOpsProjetCv'
                 }
             }
         }
@@ -33,6 +50,11 @@ pipeline {
                     kubernetesDeploy (configs: 'deployment-service.yaml', kubeconfigId: 'k8sminikubepwd')
                 }
             }
+        }
+    }
+    post {
+        success {
+            slackSend message:"A new version of devopsprojet/devOpsProjetCv is succesful build - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
         }
     }
 }
