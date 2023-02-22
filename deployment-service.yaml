@@ -1,3 +1,10 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: atos-devops-automation
+
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -7,7 +14,7 @@ spec:
   selector:
     matchLabels:
       app: atos-devops-automation-demo-k8s
-  replicas: 2
+  replicas: 1
   template:
     metadata:
       labels:
