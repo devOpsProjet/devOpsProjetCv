@@ -4,35 +4,31 @@ pipeline {
         maven 'Maven-3'
     }
     stages{
-        stage('Build Maven'){
+        stage('Maven Compile'){
             steps{
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/cndiaye-dev/atos-devops-automation-demo']]])
-                sh 'mvn clean install'
+                sh 'mvn clean compile'
             }
         }
-        stage('Build docker image'){
-            steps{
-                script{
-                    sh 'docker build -t cheikhn414/atos-devops-automation-demo .'
-                }
+        stage('Maven Test'){
+         steps{
+               sh 'mvn  test'
+         }
+        }
+       stage('Maven Install'){
+             steps{
+                    sh 'mvn  install'
+             }
+       }
+
+        stage('Build image') {
+               dockerImage = docker.build("devopsprojet/devopsprojetatos-app:latest")
+        }
+        stage('Docker Push'){
+            withDockerRegistry([ credentialsId: "docker-hub", url: "" ]) {
+                dockerImage.push()
             }
         }
-        stage('Push image to Hub'){
-            steps{
-                script{
-                    sh 'docker login -u cheikhn414 -p LINdepoule88'
-                }
-                script{
-                    sh 'docker push cheikhn414/atos-devops-automation-demo'
-                }
-            }
-        }
-        stage('Deploy to k8s'){
-            steps{
-                script{
-                    kubernetesDeploy (configs: 'deployment-service.yaml', kubeconfigId: 'k8sminikubepwd')
-                }
-            }
-        }
+
     }
 }
