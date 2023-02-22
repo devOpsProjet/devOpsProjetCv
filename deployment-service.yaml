@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: atos-devops-automation-demo-k8s
-          image: cheikhn414/atos-devops-automation-demo
+          image: devopsprojet/devopsprojetcv
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080

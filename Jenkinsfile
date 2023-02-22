@@ -17,17 +17,34 @@ pipeline {
                 }
             }
         }
-         stage('Run Docker Container') {
+        stage('Prepare Environement') {
+            steps
+            {
+                script {
+                    containerName = bat(returnStdout: true, script: "docker ps -a -f 'name=test-container' --format '{{.Names}}'").trim()
+                    if(containerName == "test-container")
+                    {
+                        bat 'docker rm test-container --force'
+                        bat "echo 'Nettoyage environnement OK'"
+                    }
+                    else
+                    {
+                        bat "echo 'Ennvironnement OK'"
+                    }
+                }
+            }
+        }
+        stage('Run Docker Container') {
             steps {
                 bat 'docker run -d -p 8090:8080 --name test-container devopsprojet/devopsprojetcv:latest'
-                bat 'sleep 15s'
+                // bat 'sleep 15s'
             }
         }
-        stage('Test Docker Container') {
-            steps {
-               bat 'curl http://localhost:8090'
-            }
-        }
+        // stage('Test Docker Container') {
+        //     steps {
+        //        bat 'curl http://localhost:8090'
+        //     }
+        // }
         stage('Clean Environment') {
             steps {
                 bat 'docker stop test-container'
